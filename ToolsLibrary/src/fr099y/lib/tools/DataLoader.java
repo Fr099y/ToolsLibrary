@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 
@@ -19,6 +20,18 @@ public class DataLoader extends AsyncTask<Object, Object, Object>{
 	private DataLoaderListener listener;
 	private final Activity act;
 	private final boolean isMobileDataEnabled;
+	
+	/**
+	 * <br>
+	 * <strong>AsyncTask</strong>-аас удамшсан класс бөгөөд <strong>execute</strong> хийхдээ <strong>String</strong> төрлөөр URL-ийг зааж өгнө. Тухайн зааж өгсөн
+	 * URL-д байрлах өгөгдлийг уншина. Ирсэн өгөгдлийг яаж хөрвүүлж ашиглах нь таны сонголтын хэрэг. JSONArray, JSONObject, XML гэх мэт.
+	 * 
+	 * @param act дуудаж буй класс-ын <strong>Activity</strong>
+	 * 
+	 * @param listener <strong>DataLoaderLister</strong> interface. Энэ ToolsLibrary санд агуулагдаж байгаа. Дэлгэрэнгүйг <i>DataLoaderListener</i>-с харна уу.
+	 * 
+	 * @param isMobileDataEnabled өгөгдлийг уншихдаа MobileData ашиглах эсэх. true ашиглана:false ашиглахгүй
+	 */
 	public DataLoader(Activity act, DataLoaderListener listener, boolean isMobileDataEnabled)
 	{
 		this.listener=listener;
@@ -33,13 +46,19 @@ public class DataLoader extends AsyncTask<Object, Object, Object>{
 	@Override
 	protected Object doInBackground(Object... params) {
 		// TODO Auto-generated method stub
-		String url=(String)params[0];
+		String url=null;
+		try {
+			url=(String)params[0];	
+		} catch (Exception e) {
+			// TODO: handle exception
+			return null;
+		}
 		InputStream is = null;
 		try{
 			if(NetworkConnectionClass.isNetAvailable(act, isMobileDataEnabled, url))
 			{
 				HttpClient httpclient = new DefaultHttpClient();
-	            HttpPost httppost = new HttpPost(url);
+	            HttpGet httppost = new HttpGet(url);
 	            HttpResponse response = httpclient.execute(httppost);
 	            HttpEntity entity = response.getEntity();
 	            is = entity.getContent();

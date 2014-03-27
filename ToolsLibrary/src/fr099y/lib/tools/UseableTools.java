@@ -15,8 +15,11 @@ public class UseableTools {
 	}
 	
 	/**
-	 * Html string dotorh img tag-uudiig buten zamaar ni solih
-	 * @param main_path image-iin urd nemegdeh undsen path Example: www.sample.com/uploads/images/
+	 * <br>
+	 * <strong>HTML</strong> өгөгдөл уншиж байгаа үед заримдаа зургын замыг бүтэн бичээгүй байдаг. <strong>"<img src="uploads/sample.png">"</strong>. Эдгээр нь browser дээрээс зураг харагдах боловч Mobile дээр зургын зам
+	 * бүтэн биш учир харагдадгүй. Үнийг засахын тулд зургын замыг солих шаардлагатай. 
+	 * @param main_path <strong>img</strong> таг-уудын урд байвал зохих үндсэн зам
+	 * @param full_body <strong>HTML</strong> хэлбэрээр ирж буй өгөгдөл. 
 	 */
 	public String setFullImgTag(String main_path, String full_body)
 	{
@@ -29,7 +32,9 @@ public class UseableTools {
 	}
 	
 	/**
-	 * Html string dotroos img tag-uudiig avah
+	 * <br>
+	 * <strong>HTML</strong> өгөгдөл дотороос <strong>img</strong> таг-уудын утгыг авах. Зөвхөн зургыг нь авч ашиглах тохиолдолд хэрэглэнэ.
+	 * @param full_body <strong>HTML</strong> бүтэцтэй өгөгдөл
 	 */
 	public Matcher getImgSrc(String full_body)
 	{

@@ -21,6 +21,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 
+/**
+ * 
+ * @author Fr099y
+ *
+ */
 public class ImageLoader {
     
     MemoryCache memoryCache=new MemoryCache();
@@ -29,6 +34,14 @@ public class ImageLoader {
     ExecutorService executorService;
     Handler handler=new Handler();
     final int stub_id;
+    int REQUIRED_SIZE=210;
+    
+    /**
+     * <br>
+     * <strong>ImageView</strong>-р сүлжээнд байгаа зургыг харуулахдаа уг классыг ашиглана.
+     * @param context дуудаж буй классын <strong>Context</strong>
+     * @param default_image_resource <strong>ImageView</strong>-д зургыг татаж дуустал түр хугацаанд харуулах бэлдсэн зураг.
+     */
     public ImageLoader(Context context, int default_image_resource){
         fileCache=new FileCache(context);
         executorService=Executors.newFixedThreadPool(5);
@@ -36,6 +49,12 @@ public class ImageLoader {
     }
     
     
+    /**
+     * <br>
+     * <strong>ImageView</strong>-д сүлжээнд байгаа зураг харуулах
+     * @param url сүлжээнд байрших зурагны зам
+     * @param imageView тухайн зургыг харуулах гэж буй <strong>ImageView</strong>
+     */
     public void DisplayImage(String url, ImageView imageView)
     {
         imageViews.put(imageView, url);
@@ -48,7 +67,14 @@ public class ImageLoader {
             imageView.setImageResource(stub_id);
         }
     }
-        
+    /**
+     * Зураг харуулах боломжит хэмжээг тохируулах. Хэт том зураг уншиж санах ойг дүүргэхээс сэргийлнэ
+     * @param requiredSize зургын боломжит хэмжээ. <strong>Pixel</strong>
+     */
+    public void setImageRequiresSize(int requiredSize)
+    {
+    	this.REQUIRED_SIZE=requiredSize;
+    }
     private void queuePhoto(String url, ImageView imageView)
     {
         PhotoToLoad p=new PhotoToLoad(url, imageView);
@@ -87,18 +113,14 @@ public class ImageLoader {
         }
     }
 
-    //decodes image and scales it to reduce memory consumption
     private Bitmap decodeFile(File f){
         try {
-            //decode image size
             BitmapFactory.Options o = new BitmapFactory.Options();
             o.inJustDecodeBounds = true;
             FileInputStream stream1=new FileInputStream(f);
             BitmapFactory.decodeStream(stream1,null,o);
             stream1.close();
             
-            //Find the correct scale value. It should be the power of 2.
-            final int REQUIRED_SIZE=210;
             int width_tmp=o.outWidth, height_tmp=o.outHeight;
             int scale=1;
             while(true){
@@ -109,7 +131,6 @@ public class ImageLoader {
                 scale*=2;
             }
             
-            //decode with inSampleSize
             BitmapFactory.Options o2 = new BitmapFactory.Options();
             o2.inSampleSize=scale;
             FileInputStream stream2=new FileInputStream(f);
@@ -124,7 +145,6 @@ public class ImageLoader {
         return null;
     }
     
-    //Task for the queue
     private class PhotoToLoad
     {
         public String url;
@@ -165,7 +185,6 @@ public class ImageLoader {
         return false;
     }
     
-    //Used to display bitmap in the UI thread
     class BitmapDisplayer implements Runnable
     {
         Bitmap bitmap;

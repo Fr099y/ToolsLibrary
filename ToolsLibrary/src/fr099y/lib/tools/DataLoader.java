@@ -20,11 +20,13 @@ public class DataLoader extends AsyncTask<Object, Object, Object>{
 	private DataLoaderListener listener;
 	private final Activity act;
 	private final boolean isMobileDataEnabled;
+	private final DataLoaderDB db;
 	
 	/**
 	 * <br>
-	 * <strong>AsyncTask</strong>-аас удамшсан класс бөгөөд <strong>execute</strong> хийхдээ <strong>String</strong> төрлөөр URL-ийг зааж өгнө. Тухайн зааж өгсөн
-	 * URL-д байрлах өгөгдлийг уншина. Ирсэн өгөгдлийг яаж хөрвүүлж ашиглах нь таны сонголтын хэрэг. JSONArray, JSONObject, XML гэх мэт.
+	 * <strong>AsyncTask</strong>-аас удамшсан класс бөгөөд <strong>execute</strong> хийхдээ дамжуулах обьектийн 0 дугаар элемэнтийг  <strong>String</strong> төрлөөр(өгөгдөл унших URL), 
+	 * 1 дүгээр элемэнтийг boolean(өгөгдлийг баазад хадгалах эсэх. Дараа нь интернэтгүй орчинд өгөгдөл уншиж харуулах боломжтой default:true) төрөлтэй зааж өгнө. 
+	 * Тухайн зааж өгсөн URL-д байрлах өгөгдлийг уншина. Ирсэн өгөгдлийг яаж хөрвүүлж ашиглах нь таны сонголтын хэрэг. JSONArray, JSONObject, XML гэх мэт.
 	 * 
 	 * @param act дуудаж буй класс-ын <strong>Activity</strong>
 	 * 
@@ -37,6 +39,7 @@ public class DataLoader extends AsyncTask<Object, Object, Object>{
 		this.listener=listener;
 		this.act=act;
 		this.isMobileDataEnabled=isMobileDataEnabled;
+		this.db=new DataLoaderDB(act);
 	}
 	@Override
 	protected void onPreExecute()
@@ -47,11 +50,17 @@ public class DataLoader extends AsyncTask<Object, Object, Object>{
 	protected Object doInBackground(Object... params) {
 		// TODO Auto-generated method stub
 		String url=null;
+		boolean isFromDB=true;
 		try {
 			url=(String)params[0];	
 		} catch (Exception e) {
 			// TODO: handle exception
 			return null;
+		}
+		try {
+			isFromDB=(Boolean)params[1];
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 		InputStream is = null;
 		try{
@@ -69,14 +78,20 @@ public class DataLoader extends AsyncTask<Object, Object, Object>{
 	                    sb.append(line + "\n");
 	            }
 	            is.close();
+	            if(isFromDB)
+	            	db.insertData(url, sb.toString());
 	            return sb.toString();
+			}
+			else if(isFromDB)
+			{
+				return db.getData(url);
 			}
 			else
 				return null;
 	    }catch(Exception e){
 	            Log.e("TEST", "Error converting result "+e.toString());
+	            return null;
 	    }
-		return null;
 	}
 	@Override
 	protected void onPostExecute(Object result)

@@ -59,6 +59,7 @@ public class DataLoaderDB extends SQLiteOpenHelper{
 		}
 		if(cursor!=null || !cursor.isClosed())
 			cursor.close();
+		db.close();
 		return data;
 	}
 

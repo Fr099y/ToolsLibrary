@@ -1,5 +1,6 @@
 package fr099y.lib.tools;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,30 +17,34 @@ public class UseableTools {
 	
 	/**
 	 * <br>
-	 * <strong>HTML</strong> өгөгдөл уншиж байгаа үед заримдаа зургын замыг бүтэн бичээгүй байдаг. <strong>"<img src="uploads/sample.png">"</strong>. Эдгээр нь browser дээрээс зураг харагдах боловч Mobile дээр зургын зам
-	 * бүтэн биш учир харагдадгүй. Үнийг засахын тулд зургын замыг солих шаардлагатай. 
-	 * @param main_path <strong>img</strong> таг-уудын урд байвал зохих үндсэн зам
-	 * @param full_body <strong>HTML</strong> хэлбэрээр ирж буй өгөгдөл. 
+	 * <strong>HTML</strong> өгөгдлөөс өгөгдсөн таг дахь өгөгдсон аttribut-ын утгыг <strong>ArrayList</strong> төрлөөр авах
+	 * @param html_data <strong>HTML</strong> хэлбэрээр ирж буй өгөгдөл. 
+	 * @param tag tag-ийн нэр
+	 * @param attribute авах өгөгдлийн attribute-ийн мэдээлэл
 	 */
-	public String setFullImgTag(String main_path, String full_body)
+	public ArrayList<String> getAttributeValues(String html_data, String tag, String attribute)
 	{
-		Matcher regexMatcher=getImgSrc(full_body);
+		ArrayList<String> values=new ArrayList<String>();
+		Matcher regexMatcher=getAttributes(html_data, tag, attribute);
 		while (regexMatcher.find()) 
 		{
-			full_body=full_body.replace(regexMatcher.group(1), main_path+regexMatcher.group(1));
+			values.add(regexMatcher.group(1));
+//			full_body=full_body.replace(regexMatcher.group(1), main_path+regexMatcher.group(1));
 		}
-		return full_body;
+		return values;
 	}
 	
 	/**
 	 * <br>
-	 * <strong>HTML</strong> өгөгдөл дотороос <strong>img</strong> таг-уудын утгыг авах. Зөвхөн зургыг нь авч ашиглах тохиолдолд хэрэглэнэ.
-	 * @param full_body <strong>HTML</strong> бүтэцтэй өгөгдөл
+	 * <strong>HTML</strong> өгөгдлөөс өгөгдсөн таг дахь өгөгдсон аttribut-ын утгыг <strong>Matcher</strong> төрлөөр авах
+	 * @param html_data <strong>HTML</strong> хэлбэрээр ирж буй өгөгдөл. 
+	 * @param tag tag-ийн нэр
+	 * @param attribute авах өгөгдлийн attribute-ийн мэдээлэл
 	 */
-	public Matcher getImgSrc(String full_body)
+	public Matcher getAttributes(String html_data, String tag, String attribute)
 	{
-		Pattern titleFinder = Pattern.compile("<img[^>]+src\\s*=\\s*['\"]([^'\"]+)['\"][^>]*>" , Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-		Matcher regexMatcher = titleFinder.matcher(full_body);
+		Pattern titleFinder = Pattern.compile("<"+tag+"[^>]+"+attribute+"\\s*=\\s*['\"]([^'\"]+)['\"][^>]*>" , Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+		Matcher regexMatcher = titleFinder.matcher(html_data);
 		return regexMatcher;
 	}
 }
